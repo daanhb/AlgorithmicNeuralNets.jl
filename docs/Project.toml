@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+AlgorithmicNeuralNets = "e1e2f281-961d-4feb-abb7-d1d98ed7c6ac"

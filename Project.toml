@@ -1,0 +1,19 @@
+name = "AlgorithmicNeuralNets"
+uuid = "0465fc46-1945-4278-a0bd-c3eeb4eb1919"
+authors = ["Daan Huybrechs <daan.huybrechs@kuleuven.be> and contributors"]
+version = "1.0.0-DEV"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+
+[compat]
+LinearAlgebra = "1.11.0"
+SparseArrays = "1.11.0"
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
