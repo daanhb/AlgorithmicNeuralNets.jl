@@ -52,21 +52,21 @@ julia> width(M)
 4
 
 julia> x = rand()
-0.519732898303821
+0.7627133997007148
 
 julia> abs(M(x)-x^2)
-4.066203840302762e-8
+9.186748993750271e-7
 
 julia> M = ann_square(24);
 
 julia> abs(M(x)-x^2)
-2.886579864025407e-15
+9.992007221626409e-16
 ```
 This network is a special case. Its width is `4`, regardless of the depth of the network.
 
 ### The exponential function
 
-A network is described in the paper that approximates both `exp(x)` and `exp(-x)` simultaneously. In this case, the width of the network is proportional to the logarithm of its depth.
+A network is described in the paper that approximates both `exp(x)` and `exp(-x)` simultaneously. In this case, the width of the network is proportional to its depth.
 
 ```julia
 julia> M = ann_exp(10);
@@ -81,11 +81,106 @@ julia> width(M)
 24
 
 julia> x = rand()
-0.037070301507582504
+0.312767561056721
 
 julia> norm(M([x]) - [exp(x); exp(-x)])
-1.0810517294049192e-9
-```
-Note that using `M([x])` we apply the network to the input vector `[x]`, rather than to the scalar number `x`.
+1.470830763310804e-7
 
+julia> M = ann_exp(24);
+
+julia> depth(M)
+50
+
+julia> width(M)
+52
+
+julia> norm(M([x]) - [exp(x); exp(-x)])
+1.1102230246251565e-16
+```
+Note that the syntax `M([x])` is used here to apply the network to the input vector `[x]`. The outcome is a vector, in this case of length 2.
+
+### Trigonometric functions
+
+The approximation of the `cos` and `sin` functions is similar to that of the exponential functions.
+```julia
+julia> M = ann_sincos(24);
+
+julia> x = rand()
+0.5830455566554003
+
+julia> norm(M([x]) - [cos(x); sin(x)])
+4.220308060520364e-15
+```
+
+### Monomials
+
+A neural network to approximate the polynomial basis functions `x^k` is different from the earlier examples, since the dimension of the output grows with increasing
+degree of the polynomials.
+
+The degree is specified as the second argument. 
+```julia
+julia> M = ann_monomials(10, 5);
+
+julia> depth(M)
+22
+
+julia> width(M)
+28
+
+julia> x = rand()
+0.09437718256017558
+
+julia> M([x])
+4-element Vector{Float64}:
+ 0.008907271713001846
+ 0.0008406845084987791
+ 7.934727343766879e-5
+ 7.489305687780057e-6
+
+julia> norm(M([x]) - x.^(2:5))
+2.280291711793557e-7
+
+julia> M = ann_monomials(24, 10);
+
+julia> norm(M([x]) - x.^(2:10))
+8.638733852373792e-16
+```
+The output omits the first two powers of `x` as these are `0` and `x` itself,
+respectively.
+
+
+
+## The multiplication function
+
+The function `f(x,y) = xy` is another important known case. It can be used as a building block to approximate functions of several arguments, for example multivariate polynomials.
+
+```julia
+julia> M = ann_mul(24);
+
+julia> depth(M)
+74
+
+julia> width(M)
+102
+
+julia> M([0.3,0.4])
+1-element Vector{Float64}:
+ 0.11999999999999889
+```
+
+
+## Internal structure
+
+The type `ReLUNet` represents a neural network. It is a very simple data container that holds the weights matrices and bias vectors. The biases are stored as a vector of vectors. The weights are stored as a vector of matrices.
+
+For the case of the search algorithms, the weights matrices are stored as sparse matrices. In the other cases, the weight matrices are dense.
+```julia
+julia> M = bitonic_sort_network(10);
+
+julia> typeof(M.biases)
+Vector{Vector{Float64}} (alias for Array{Array{Float64, 1}, 1})
+
+julia> typeof(M.weights)
+Vector{SparseMatrixCSC{Float64, Int64}} (alias for Array{SparseArrays.SparseMatrixCSC{Float64, Int64}, 1})
+```
 

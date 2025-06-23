@@ -70,7 +70,18 @@ function monomials_approx_relu(x, degree, j = 1; L = 20, init = :interpolation)
     u
 end
 
+"""
+    ann_monomials(L, degree[, T]; init = :interpolation)
 
+Construct a neural network to approximate monomials up to the given degree on
+the interval `[0,1]`. The network implements a recursive algorithm with `L` steps.
+
+Optionally, a numerical precision type `T` can be specified.
+
+A keyword argument `init` can be specified with the values:
+- 'taylor': the recursive algorithm is initialized with a Taylor series approximation
+- 'interpolation': the algorithm constructs an interpolating approximation
+"""
 function ann_monomials(L, degree::Int, ::Type{T} = Float64; init = :interpolation) where {T}
     # Refinement: [x] -> [refine(x); x]
     Mref = ann_refine(L, T)

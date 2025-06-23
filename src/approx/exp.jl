@@ -53,7 +53,19 @@ function exp_approx_relu(x, j = 1; L = 20, init = :taylor)
 end
 
 
-function ann_exp(L, ::Type{T} = Float64; init=:taylor) where {T}
+"""
+    ann_exp(L[, T]; init = :interpolation)
+
+Construct a neural network to approximate `e^x` and `e^(-x)` on
+the interval `[0,1]`. The network implements a recursive algorithm with `L` steps.
+
+Optionally, a numerical precision type `T` can be specified.
+
+A keyword argument `init` can be specified with the values:
+- 'taylor': the recursive algorithm is initialized with a Taylor series approximation
+- 'interpolation': the algorithm constructs an interpolating approximation
+"""
+function ann_exp(L, ::Type{T} = Float64; init=:interpolation) where {T}
     # Refinement: [x] -> [refine(x); x]
     Mref = ann_refine(L, T)
 

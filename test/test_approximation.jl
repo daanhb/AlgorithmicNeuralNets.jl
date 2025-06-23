@@ -1,6 +1,6 @@
 @testset "Approximation" begin
     @testset "x^2" begin
-        M = ann_square(10)
+        M = ann_square(10; init=:taylor)
         x1 = sqrt(2)/2
         @test abs(M(x1) - AN.square_approx(x1; L=10)) < 1e-15
         @test abs(M(x1) - x1^2) < 1e-6
@@ -11,7 +11,7 @@
     end
     
     @testset "exp(x)" begin
-        M = ann_exp(10)
+        M = ann_exp(10; init=:taylor)
         x1 = sqrt(2)/2
         @test norm(M([x1]) - AN.exp_approx(x1; L=10)) < 1e-15
         @test norm(M([x1]) - AN.exp_approx_relu(x1; L=10)) < 1e-15
@@ -23,7 +23,7 @@
     end
 
     @testset "trigonometric functions" begin
-        M = ann_sincos(10)
+        M = ann_sincos(10; init=:taylor)
         x1 = sqrt(2)/2
         @test norm(M([x1]) - AN.sincos_approx(x1; L=10)) < 1e-15
         @test norm(M([x1]) - AN.sincos_approx_relu(x1; L=10)) < 1e-15

@@ -22,16 +22,21 @@ end
 
 
 """
-    ann_square(levels[, T]; options...)
+    ann_square(L[, T]; init = :interpolation)
 
-Return a neural network to approximate the square function.
+Construct a neural network to approximate `x^2` on the interval `[0,1]`.
+The network implements a recursive algorithm with `L` steps.
 
-Optionall, the keyword argument init can be supplied to select among different
-types of approximation. Possible values are the symbols :taylor, :interpolation and
-:midvalue.
+Optionally, a numerical precision type `T` can be specified.
+
+A keyword argument `init` can be specified with the values:
+- 'taylor': the recursive algorithm is initialized with a Taylor series approximation
+- 'interpolation': the algorithm constructs an interpolating approximation
+- 'midvalue': the recursive algorithm is initialized with the average of the possible
+  range in the initial interval.
 """
-function ann_square(levels::Int, ::Type{T} = Float64; init=:taylor) where {T}
-    models = [ann_square_rec(level, T) for level in 1:levels]
+function ann_square(L::Int, ::Type{T} = Float64; init=:taylor) where {T}
+    models = [ann_square_rec(level, T) for level in 1:L]
     M = reduce(hcat_model, models)
     # Make input go from [x] to [x; 0]
     Min = ann_input(1, 2, T)
@@ -42,10 +47,10 @@ function ann_square(levels::Int, ::Type{T} = Float64; init=:taylor) where {T}
         Mselect = ann_select(2, 2, T)
     elseif init == :midvalue
         Mselect = ann_select(2, 2, T)
-        Mselect.biases[1][1] = one(T)/2^(2*levels+1)
+        Mselect.biases[1][1] = one(T)/2^(2*L+1)
     elseif init == :interpolation
         Mselect = ann_select(2, 2, T)
-        Mselect.weights[1][1] = one(T)/2^levels
+        Mselect.weights[1][1] = one(T)/2^L
     else
         throw(ArgumentError("Unknown initialization: :$(init)"))
     end

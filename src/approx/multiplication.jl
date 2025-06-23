@@ -84,6 +84,14 @@ function mul_approx_y_relu(x, y, j; L, init)
 end
 
 
+"""
+    ann_mul(L[, T])
+
+Construct a neural network to approximate `f(x,y) = x*y` on the unit square.
+The network implements a recursive algorithm with `L` steps.
+
+Optionally, a numerical precision type `T` can be specified.
+"""
 function ann_mul(L, ::Type{T} = Float64; init = :zero) where {T}
     Mperm = ann_permute2(T)
     Mref = ann_refine_2d(L, T)
